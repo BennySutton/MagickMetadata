@@ -3,29 +3,77 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Web;
 
-/// <summary>
-/// A wrapper class for ImageMagick that gets the important stuff from an image file's metadata so that you can do neat sh*t with it!
-/// </summary>
-/// <remarks> free to use under creative commons licence https://www.bennysutton.com/ </remarks>
 namespace Ben.Classes
 {
+
+    /// <summary>
+    /// A wrapper class for ImageMagick that gets the important stuff 
+    /// from an image file's metadata so that you can do neat sh*t with it!
+    /// </summary>
+    /// <remarks> free to use - distributed under the [MIT License](Learn more at http://opensource.org/licenses/mit-license.php):
+    /// Requires Ben.Classes.ExtensionHelpers 
+    /// </remarks>
+    /// <see>https://www.bennysutton.com/</see>
+    /// <seealso cref="https://github.com/BennySutton/MagickMetadata"/>
     public class MagickMetadata : IDisposable
     {
         private MagickImage _image;
         private string _keywords;
 
+        /// <summary>
+        /// load from an image file on your hard disk
+        /// </summary>
+        /// <param name="path">root relative virtual path to the script or path for the current request e.g. ~/admin/imagename.jpg or /admin/imagename.jpg </param>
         public MagickMetadata(string rootpath)
         {
-            if (!rootpath.IsImage()) return;
+            // prevent accidental reloading on top of existing
+            if (!_image.IsNull()) throw new Exception("Image already loaded");
+
+            if (!rootpath.GetFileName().IsImage()) throw new Exception("File does not have an image file extension");
+
             _image = new MagickImage(rootpath.PhysicalPathFromRootPath());
             Init();
+
         }
 
+        /// <summary>
+        ///  load from another MagickImage image
+        /// </summary>
+        /// <param name="image"></param>
         public MagickMetadata(MagickImage image)
         {
+            // prevent accidental reloading on top of existing
+            if (!_image.IsNull()) throw new Exception("Image already loaded");
+
+            if (!image.FileName.IsImage()) throw new Exception("File does not have an image file extension");
+
             _image = image;
             Init();
+
+        }
+
+        /// <summary>
+        /// load an image (png/gif/jpg format) from a file upload
+        /// </summary>
+        /// <param name="httpPostedFile">an image file uploaded from a client</param>
+        public MagickMetadata(HttpPostedFileBase httpPostedFile)
+        {
+            // prevent accidental reloading on top of existing
+            if (!_image.IsNull()) throw new Exception("Image already loaded");
+
+            if (!httpPostedFile.FileName.GetFileName().IsImage()) throw new Exception("File does not have an image file extension");
+
+            try
+            {
+                _image = new MagickImage(httpPostedFile.InputStream);
+                Init();
+            }
+            catch
+            {
+                throw; // check for ImageFormatException if not an image file
+            }
         }
 
         /// <summary>
@@ -52,6 +100,7 @@ namespace Ben.Classes
                 if (iptcprofile.GetValue(IptcTag.Title) != null) { Title = iptcprofile.GetValue(IptcTag.Title).ToString(); }
             }
         }
+
         public bool Save(string rootpath)
         {
             bool success = false;
@@ -141,7 +190,7 @@ namespace Ben.Classes
 
         public string Software { get; set; }
 
-        public string Source { get; set; }
+        public string Source { get; internal set; }
 
         public string Subject { get; set; }
 
