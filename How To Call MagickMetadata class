@@ -1,0 +1,14 @@
+                        string p = "~/images/test.jpg"; // test
+
+                        using (MagickMetadata metadata = new MagickMetadata(model.UploadedFile))
+                        {
+                            metadata.Copyright = "www.bennysutton.com"; // 
+                            metadata.Creator = "Benny Sutton";
+                            metadata.Country = "UK";
+                            metadata.Headline = "headline not set";
+                            metadata.Keywords = "Keyword1 keyword2";
+                            metadata.Software = "ADz";
+                            metadata.Subject = "The subject of this image";
+                            metadata.Title = "Title not set";
+                            metadata.Save(p);
+                        }
