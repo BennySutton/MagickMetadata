@@ -1,14 +1,9 @@
-﻿@model Ben.Models.Photo
+
 @using Ben.Classes;
 
-@{
-    // Layout = null;
-    ViewBag.Title = "Image Metadata: " + Model.Description;
-}
 
-<h1>@ViewBag.Title</h1>
 
-@{string filename = "/p/photos/" + Model.Id + ".jpg"; }
+@{string filename = "/images/[YOURFILENAME].jpg"; }
 
 <img src="@filename" />
 
@@ -31,7 +26,3 @@
         }
     </table>
 }
-<p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-    @Html.ActionLink("Back to List", "Index")
-</p>
