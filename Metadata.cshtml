@@ -1,0 +1,37 @@
+﻿@model Ben.Models.Photo
+@using Ben.Classes;
+
+@{
+    // Layout = null;
+    ViewBag.Title = "Image Metadata: " + Model.Description;
+}
+
+<h1>@ViewBag.Title</h1>
+
+@{string filename = "/p/photos/" + Model.Id + ".jpg"; }
+
+<img src="@filename" />
+
+@{
+    Ben.Classes.MagickMetadata magickMetadata = new Ben.Classes.MagickMetadata(filename);
+    Dictionary<string, object> myDictionary = magickMetadata.ClassPropertiesToDictionary();
+    <table id="pagedTable">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        @foreach (KeyValuePair<string, object> entry in myDictionary)
+        {
+            <tr>
+                <td>@entry.Key.ToString()</td>
+                <td>@entry.Value.IsNull("value not set").ToString()</td>
+            </tr>
+        }
+    </table>
+}
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
