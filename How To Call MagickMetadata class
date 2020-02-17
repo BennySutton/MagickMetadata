@@ -1,6 +1,6 @@
                         string p = "~/images/test.jpg"; // test
 
-                        using (MagickMetadata metadata = new MagickMetadata(model.UploadedFile))
+                        using (MagickMetadata metadata = new MagickMetadata([model.UploadedFile]OR[path to existing file on your hard disk]))
                         {
                             metadata.Copyright = "www.bennysutton.com"; // 
                             metadata.Creator = "Benny Sutton";
